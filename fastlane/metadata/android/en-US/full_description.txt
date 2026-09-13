@@ -1,0 +1,8 @@
+A beautifully tactile, relaxing jigsaw puzzle game.
+
+Features:
+
+- Levels & Campaign Progression: Scaled difficulty from 3x3 grids up to challenging 10x10 grids, with milestone Boss levels.
+- Random / Sandbox Mode: Customize your experience with any grid size (3x3 to 10x10) and choose specific images or let the game shuffle them.
+- Unified Image Pool: Pre-loaded with 20 curated images, plus the ability to import your own custom photos directly via system file picker (Android Storage Access Framework).
+- 100% Offline & Private: Zero analytics, zero tracking, zero remote servers, and zero cloud sync. All gameplay, progress, and custom assets stay exclusively on your local device.
