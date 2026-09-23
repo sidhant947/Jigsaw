@@ -46,6 +46,26 @@ class HiveService {
     await _settingsBox.put(_hintHelperKey, enabled);
   }
 
+  static const String _onboardingKey = 'has_seen_onboarding';
+
+  bool getHasSeenOnboarding() {
+    return _settingsBox.get(_onboardingKey, defaultValue: false) as bool;
+  }
+
+  Future<void> setHasSeenOnboarding(bool seen) async {
+    await _settingsBox.put(_onboardingKey, seen);
+  }
+
+  static const String _appSkinKey = 'app_skin';
+
+  String getAppSkin() {
+    return _settingsBox.get(_appSkinKey, defaultValue: 'pastel') as String;
+  }
+
+  Future<void> setAppSkin(String skin) async {
+    await _settingsBox.put(_appSkinKey, skin);
+  }
+
   static const String _unifiedImagesKey = 'unified_puzzle_images';
 
   List<String> getUnifiedImages(List<String> defaultImages) {

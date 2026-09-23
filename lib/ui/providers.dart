@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/repositories/progress_repository.dart';
 import '../data/services/hive_service.dart';
+import 'core/widgets/tangible_widgets.dart';
 import 'features/game/jigsaw/jigsaw_engine.dart';
 import 'features/home/view_models/home_view_model.dart';
 
@@ -33,6 +34,30 @@ class HintHelperNotifier extends Notifier<bool> {
     await hiveService.setHintHelper(value);
   }
 }
+
+class AppSkinNotifier extends Notifier<AppSkin> {
+  @override
+  AppSkin build() {
+    final hiveService = ref.watch(hiveServiceProvider);
+    final skinName = hiveService.getAppSkin();
+    final skin = AppSkin.values.firstWhere(
+      (s) => s.name == skinName,
+      orElse: () => AppSkin.pastel,
+    );
+    PastelPalette.currentSkin = skin;
+    return skin;
+  }
+
+  Future<void> setSkin(AppSkin skin) async {
+    PastelPalette.currentSkin = skin;
+    state = skin;
+    final hiveService = ref.read(hiveServiceProvider);
+    await hiveService.setAppSkin(skin.name);
+  }
+}
+
+final appSkinProvider =
+    NotifierProvider<AppSkinNotifier, AppSkin>(AppSkinNotifier.new);
 
 class PuzzleImagesNotifier extends Notifier<List<String>> {
   @override

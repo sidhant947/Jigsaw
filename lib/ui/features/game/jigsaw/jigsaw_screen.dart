@@ -91,7 +91,7 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
                         color: PastelPalette.locked,
-                        child: const Center(
+                        child: Center(
                           child: Icon(Icons.broken_image, color: PastelPalette.lockedText),
                         ),
                       ),
@@ -101,7 +101,7 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
                         color: PastelPalette.locked,
-                        child: const Center(
+                        child: Center(
                           child: Icon(Icons.broken_image, color: PastelPalette.lockedText),
                         ),
                       ),
@@ -123,6 +123,7 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(appSkinProvider);
     final state = ref.watch(jigsawViewModelProvider);
     final notifier = ref.read(jigsawViewModelProvider.notifier);
 
@@ -157,14 +158,14 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (isBoss) ...[
-                const Icon(Icons.star_rounded, color: PastelPalette.peachText, size: 18),
+                Icon(Icons.star_rounded, color: PastelPalette.peachText, size: 18),
                 const SizedBox(width: 4),
               ],
               Text(
                 widget.isRandom
                     ? 'Random'
                     : (isBoss ? 'Boss ${widget.levelNumber}' : 'Level ${widget.levelNumber}'),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w900,
                   fontSize: 16,
                   color: PastelPalette.textDark,
@@ -308,11 +309,11 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.celebration_rounded, color: PastelPalette.peach, size: 22),
+                            Icon(Icons.celebration_rounded, color: PastelPalette.peach, size: 22),
                             const SizedBox(width: 8),
                             Text(
                               widget.isRandom ? 'Puzzle Solved!' : 'Level Complete!',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w900,
                                 color: PastelPalette.textDark,
@@ -341,7 +342,7 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
                           },
                           child: Text(
                             widget.isRandom ? 'New Puzzle' : 'Next Level',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w900,
                               color: PastelPalette.mintText,
@@ -354,7 +355,7 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
                           color: PastelPalette.lavender,
                           bevelColor: PastelPalette.lavenderBevel,
                           onPressed: () => Navigator.pop(context),
-                          child: const Text(
+                          child: Text(
                             'Home',
                             style: TextStyle(
                               fontSize: 16,
@@ -372,7 +373,7 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
                             final Uri url = Uri.parse('https://ko-fi.com/sidhant947');
                             await launchUrl(url, mode: LaunchMode.externalApplication);
                           },
-                          child: const FittedBox(
+                          child: FittedBox(
                             fit: BoxFit.scaleDown,
                             child: Text(
                               'Buy me a coffee',
@@ -399,17 +400,25 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
                                     notifier.undo();
                                   }
                                 : null,
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.undo_rounded, color: PastelPalette.lavenderText, size: 22),
-                                SizedBox(width: 8),
+                                Icon(
+                                  Icons.undo_rounded,
+                                  color: notifier.canUndo
+                                      ? PastelPalette.lavenderText
+                                      : PastelPalette.lockedText,
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 8),
                                 Text(
                                   'Undo',
                                   style: TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w900,
-                                    color: PastelPalette.lavenderText,
+                                    color: notifier.canUndo
+                                        ? PastelPalette.lavenderText
+                                        : PastelPalette.lockedText,
                                   ),
                                 ),
                               ],
@@ -429,17 +438,25 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
                                       notifier.useHint();
                                     }
                                   : null,
-                              child: const Row(
+                              child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.lightbulb_rounded, color: PastelPalette.butterText, size: 22),
-                                  SizedBox(width: 8),
+                                  Icon(
+                                    Icons.lightbulb_rounded,
+                                    color: !state.isSolved
+                                        ? PastelPalette.butterText
+                                        : PastelPalette.lockedText,
+                                    size: 22,
+                                  ),
+                                  const SizedBox(width: 8),
                                   Text(
                                     'Hint',
                                     style: TextStyle(
                                       fontSize: 17,
                                       fontWeight: FontWeight.w900,
-                                      color: PastelPalette.butterText,
+                                      color: !state.isSolved
+                                          ? PastelPalette.butterText
+                                          : PastelPalette.lockedText,
                                     ),
                                   ),
                                 ],

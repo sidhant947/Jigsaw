@@ -27,14 +27,16 @@ void main() async {
   );
 }
 
-class JigsawApp extends StatelessWidget {
+class JigsawApp extends ConsumerWidget {
   const JigsawApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final skin = ref.watch(appSkinProvider);
+
     return MaterialApp(
       title: 'Jigsaw',
-      theme: AppTheme.light,
+      theme: AppTheme.getTheme(skin),
       home: const HomeView(),
       debugShowCheckedModeBanner: false,
     );

@@ -7,6 +7,7 @@ import '../../../providers.dart';
 import 'package:jigsaw/ui/core/widgets/tangible_widgets.dart';
 import '../../game/jigsaw/jigsaw_screen.dart';
 import '../../level_select/views/level_select_view.dart';
+import '../../onboarding/views/onboarding_view.dart';
 import '../../settings/views/settings_view.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -20,9 +21,17 @@ class _HomeViewState extends ConsumerState<HomeView> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-      () => ref.read(homeViewModelProvider.notifier).loadProgress(),
-    );
+    Future.microtask(() async {
+      await ref.read(homeViewModelProvider.notifier).loadProgress();
+      if (!mounted) return;
+      final hiveService = ref.read(hiveServiceProvider);
+      if (!hiveService.getHasSeenOnboarding()) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const OnboardingView()),
+        );
+      }
+    });
   }
 
   Future<void> _launchUrl(String urlString) async {
@@ -53,7 +62,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
+                    Text(
                       'Random Puzzle',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -63,7 +72,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Select Image',
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
@@ -103,7 +112,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                     width: isSelected ? 3 : 1.5,
                                   ),
                                 ),
-                                child: const Column(
+                                child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
@@ -111,7 +120,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                       color: PastelPalette.butterText,
                                       size: 24,
                                     ),
-                                    SizedBox(height: 2),
+                                    const SizedBox(height: 2),
                                     Text(
                                       'Random',
                                       style: TextStyle(
@@ -156,7 +165,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                             (context, error, stackTrace) =>
                                                 Container(
                                                   color: PastelPalette.locked,
-                                                  child: const Center(
+                                                  child: Center(
                                                     child: Icon(
                                                       Icons.broken_image,
                                                       size: 20,
@@ -173,7 +182,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                             (context, error, stackTrace) =>
                                                 Container(
                                                   color: PastelPalette.locked,
-                                                  child: const Center(
+                                                  child: Center(
                                                     child: Icon(
                                                       Icons.broken_image,
                                                       size: 20,
@@ -192,7 +201,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     const SizedBox(height: 16),
                     Text(
                       'Grid Size: ${selectedGrid}x$selectedGrid',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w800,
                         color: PastelPalette.textDark,
                         fontSize: 16,
@@ -227,7 +236,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             bevelColor: PastelPalette.lockedBevel,
                             elevation: 3,
                             onPressed: () => Navigator.pop(context),
-                            child: const FittedBox(
+                            child: FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Text(
                                 'Cancel',
@@ -260,7 +269,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                 ),
                               );
                             },
-                            child: const FittedBox(
+                            child: FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Text(
                                 'Start',
@@ -286,6 +295,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(appSkinProvider);
     final state = ref.watch(homeViewModelProvider);
 
     return Scaffold(
@@ -316,7 +326,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.bolt_rounded,
                       color: PastelPalette.butterText,
                       size: 20,
@@ -324,7 +334,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     const SizedBox(width: 4),
                     Text(
                       'Level ${state.progress!.currentLevel}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 16,
                         color: PastelPalette.textDark,
@@ -356,7 +366,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Spacer(),
-              const Center(
+              Center(
                 child: Text(
                   'Jigsaw',
                   style: TextStyle(
@@ -367,7 +377,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     shadows: [
                       Shadow(
                         color: PastelPalette.neutralBevel,
-                        offset: Offset(0, 5),
+                        offset: const Offset(0, 5),
                         blurRadius: 0,
                       ),
                     ],
@@ -392,7 +402,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         );
                         ref.read(homeViewModelProvider.notifier).loadProgress();
                       },
-                child: const Text(
+                child: Text(
                   'Play',
                   style: TextStyle(
                     fontSize: 20,
@@ -415,7 +425,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   );
                   ref.read(homeViewModelProvider.notifier).loadProgress();
                 },
-                child: const Text(
+                child: Text(
                   'Levels',
                   style: TextStyle(
                     fontSize: 18,
@@ -430,7 +440,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 color: PastelPalette.butter,
                 bevelColor: PastelPalette.butterBevel,
                 onPressed: () => _showRandomPuzzleDialog(context),
-                child: const Text(
+                child: Text(
                   'Random',
                   style: TextStyle(
                     fontSize: 18,
@@ -448,7 +458,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   context,
                   MaterialPageRoute(builder: (context) => const SettingsView()),
                 ),
-                child: const Text(
+                child: Text(
                   'Settings',
                   style: TextStyle(
                     fontSize: 18,

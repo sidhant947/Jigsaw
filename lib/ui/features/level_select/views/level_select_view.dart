@@ -22,6 +22,7 @@ class _LevelSelectViewState extends ConsumerState<LevelSelectView> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(appSkinProvider);
     final state = ref.watch(homeViewModelProvider);
     final highestCompleted = state.progress?.highestLevelCompleted ?? 0;
     final currentLevel = state.progress?.currentLevel ?? 1;
@@ -39,7 +40,7 @@ class _LevelSelectViewState extends ConsumerState<LevelSelectView> {
             ),
           ),
         ),
-        title: const Text(
+        title: Text(
           'Levels',
           style: TextStyle(
             fontWeight: FontWeight.w900,
@@ -100,7 +101,7 @@ class _LevelSelectViewState extends ConsumerState<LevelSelectView> {
                     ref.read(homeViewModelProvider.notifier).loadProgress();
                   },
             child: isLocked
-                ? const Icon(
+                ? Icon(
                     Icons.lock_rounded,
                     size: 22,
                     color: PastelPalette.lockedText,

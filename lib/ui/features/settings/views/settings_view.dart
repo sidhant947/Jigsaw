@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../../providers.dart';
 import 'package:jigsaw/ui/core/widgets/tangible_widgets.dart';
+import '../../onboarding/views/onboarding_view.dart';
 
 class SettingsView extends ConsumerWidget {
   const SettingsView({super.key});
@@ -26,7 +27,7 @@ class SettingsView extends ConsumerWidget {
             ),
           ),
         ),
-        title: const Text(
+        title: Text(
           'Settings',
           style: TextStyle(
             fontWeight: FontWeight.w900,
@@ -50,7 +51,7 @@ class SettingsView extends ConsumerWidget {
                     color: PastelPalette.sky.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.lightbulb_rounded,
                     color: PastelPalette.skyText,
                     size: 26,
@@ -60,7 +61,7 @@ class SettingsView extends ConsumerWidget {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
                         'Hint Helper',
                         style: TextStyle(
@@ -69,7 +70,7 @@ class SettingsView extends ConsumerWidget {
                           color: PastelPalette.textDark,
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
                         'Display hint button on puzzle screen',
                         style: TextStyle(
@@ -94,11 +95,92 @@ class SettingsView extends ConsumerWidget {
               ],
             ),
           ),
+          const SizedBox(height: 24),
+          Text(
+            'App Theme',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              color: PastelPalette.textDark,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Customize your color scheme',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: PastelPalette.textMuted,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 56,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.none,
+              itemCount: AppSkin.values.length,
+              separatorBuilder: (context, index) => const SizedBox(width: 14),
+              itemBuilder: (context, index) {
+                final skin = AppSkin.values[index];
+                final currentSkin = ref.watch(appSkinProvider);
+                final isSelected = skin == currentSkin;
+                final palette = AppPaletteData.forSkin(skin);
+
+                return GestureDetector(
+                  onTap: () {
+                    ref.read(appSkinProvider.notifier).setSkin(skin);
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: palette.canvas,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isSelected
+                            ? PastelPalette.mintBevel
+                            : PastelPalette.neutralBevel,
+                        width: isSelected ? 3.5 : 2,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: PastelPalette.mintBevel
+                                    .withValues(alpha: 0.35),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Center(
+                      child: isSelected
+                          ? Icon(
+                              Icons.check_rounded,
+                              size: 24,
+                              color: palette.mintText,
+                            )
+                          : Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: palette.mint,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
           const SizedBox(height: 28),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Puzzle Images',
                 style: TextStyle(
                   fontSize: 20,
@@ -117,7 +199,7 @@ class SettingsView extends ConsumerWidget {
                 elevation: 2,
                 child: Text(
                   '${images.length} images',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: PastelPalette.butterText,
@@ -126,9 +208,8 @@ class SettingsView extends ConsumerWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 4),
-          const Text(
+          Text(
             'All pre-installed images are from Pixabay and free to use under the Pixabay license.',
             style: TextStyle(
               fontSize: 12,
@@ -156,10 +237,43 @@ class SettingsView extends ConsumerWidget {
           const SizedBox(height: 28),
           TangibleButton(
             height: 54,
+            color: PastelPalette.lavender,
+            bevelColor: PastelPalette.lavenderBevel,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const OnboardingView(isRevisit: true),
+                ),
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.info_outline_rounded,
+                  color: PastelPalette.lavenderText,
+                  size: 22,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'App Info & Guide',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w900,
+                    color: PastelPalette.lavenderText,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          TangibleButton(
+            height: 54,
             color: PastelPalette.peach,
             bevelColor: PastelPalette.peachBevel,
             onPressed: () => _confirmReset(context, ref),
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
@@ -167,7 +281,7 @@ class SettingsView extends ConsumerWidget {
                   color: PastelPalette.peachText,
                   size: 22,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
                   'Reset Progress',
                   style: TextStyle(
@@ -205,7 +319,7 @@ class SettingsView extends ConsumerWidget {
                 width: 1.5,
               ),
             ),
-            child: const Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
@@ -213,7 +327,7 @@ class SettingsView extends ConsumerWidget {
                   size: 32,
                   color: PastelPalette.skyText,
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 Text(
                   'Add',
                   style: TextStyle(
@@ -267,7 +381,7 @@ class SettingsView extends ConsumerWidget {
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: PastelPalette.locked,
-                          child: const Center(
+                          child: Center(
                             child: Icon(
                               Icons.broken_image,
                               color: PastelPalette.lockedText,
@@ -280,7 +394,7 @@ class SettingsView extends ConsumerWidget {
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: PastelPalette.locked,
-                          child: const Center(
+                          child: Center(
                             child: Icon(
                               Icons.broken_image,
                               color: PastelPalette.lockedText,
@@ -313,7 +427,7 @@ class SettingsView extends ConsumerWidget {
                         ],
                         border: Border.all(color: Colors.white, width: 1.5),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Icon(
                           Icons.close_rounded,
                           size: 16,
@@ -383,7 +497,7 @@ class SettingsView extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Center(
+                Center(
                   child: Icon(
                     Icons.info_outline_rounded,
                     size: 44,
@@ -391,7 +505,7 @@ class SettingsView extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
+                Text(
                   'Minimum 10 Images',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -401,7 +515,7 @@ class SettingsView extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'The puzzle pool must have at least 10 images to ensure an optimal puzzle experience. Add another image before deleting this one.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -417,7 +531,7 @@ class SettingsView extends ConsumerWidget {
                   bevelColor: PastelPalette.mintBevel,
                   elevation: 3,
                   onPressed: () => Navigator.pop(dialogContext),
-                  child: const Text(
+                  child: Text(
                     'Got It',
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
@@ -461,7 +575,7 @@ class SettingsView extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              const Text(
+              Text(
                 'Delete Image?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -471,7 +585,7 @@ class SettingsView extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Remove this image from the puzzle pool?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -490,7 +604,7 @@ class SettingsView extends ConsumerWidget {
                       bevelColor: PastelPalette.lockedBevel,
                       elevation: 3,
                       onPressed: () => Navigator.pop(dialogContext),
-                      child: const Text(
+                      child: Text(
                         'Cancel',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
@@ -514,7 +628,7 @@ class SettingsView extends ConsumerWidget {
                           Navigator.pop(dialogContext);
                         }
                       },
-                      child: const Text(
+                      child: Text(
                         'Delete',
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
@@ -546,7 +660,7 @@ class SettingsView extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Center(
+              Center(
                 child: Icon(
                   Icons.warning_amber_rounded,
                   size: 48,
@@ -554,7 +668,7 @@ class SettingsView extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Reset Progress?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -564,7 +678,7 @@ class SettingsView extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'This clears all level progress. This action cannot be undone.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -583,7 +697,7 @@ class SettingsView extends ConsumerWidget {
                       bevelColor: PastelPalette.lockedBevel,
                       elevation: 3,
                       onPressed: () => Navigator.pop(dialogContext),
-                      child: const Text(
+                      child: Text(
                         'Cancel',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
@@ -605,7 +719,7 @@ class SettingsView extends ConsumerWidget {
                             .resetProgress();
                         if (dialogContext.mounted) Navigator.pop(dialogContext);
                       },
-                      child: const Text(
+                      child: Text(
                         'Reset All',
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
