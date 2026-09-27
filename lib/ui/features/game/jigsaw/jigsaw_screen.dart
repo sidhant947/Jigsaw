@@ -45,6 +45,106 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
     });
   }
 
+  bool _isDialogOpen = false;
+
+  Future<bool?> _showLeaveConfirmation(BuildContext context) async {
+    if (_isDialogOpen) return false;
+    _isDialogOpen = true;
+    try {
+      return await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: TangibleCard(
+            color: PastelPalette.surface,
+            bevelColor: PastelPalette.neutralBevel,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Icon(
+                    Icons.exit_to_app_rounded,
+                    size: 48,
+                    color: PastelPalette.peach,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Leave Game?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: PastelPalette.textDark,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Are you sure you want to leave? Your progress in this puzzle will be lost.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: PastelPalette.textMuted,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TangibleButton(
+                        height: 46,
+                        color: PastelPalette.locked,
+                        bevelColor: PastelPalette.lockedBevel,
+                        elevation: 3,
+                        onPressed: () => Navigator.pop(dialogContext, false),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: PastelPalette.textDark,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TangibleButton(
+                        height: 46,
+                        color: PastelPalette.peach,
+                        bevelColor: PastelPalette.peachBevel,
+                        elevation: 3,
+                        onPressed: () => Navigator.pop(dialogContext, true),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'Leave',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              color: PastelPalette.peachText,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } finally {
+      _isDialogOpen = false;
+    }
+  }
+
   Widget _buildTilePiece({
     required int pieceIndex,
     required int n,
@@ -138,18 +238,27 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
 
     final isBoss = JigsawEngine.isBossLevel(widget.levelNumber);
 
-    return Scaffold(
-      appBar: AppBar(
-        leadingWidth: 70,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16),
-          child: Center(
-            child: TangibleIconButton(
-              icon: Icons.arrow_back_rounded,
-              onPressed: () => Navigator.pop(context),
+    return PopScope(
+      canPop: state.isSolved,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldLeave = await _showLeaveConfirmation(context);
+        if (shouldLeave == true && context.mounted) {
+          Navigator.pop(context);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leadingWidth: 70,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: Center(
+              child: TangibleIconButton(
+                icon: Icons.arrow_back_rounded,
+                onPressed: () => Navigator.maybePop(context),
+              ),
             ),
           ),
-        ),
         title: TangibleBadge(
           color: PastelPalette.surface,
           bevelColor: PastelPalette.neutralBevel,
@@ -470,6 +579,7 @@ class _JigsawScreenState extends ConsumerState<JigsawScreen> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
